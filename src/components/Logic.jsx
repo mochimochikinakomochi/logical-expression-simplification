@@ -2,8 +2,6 @@ import { Table } from "./Table";
 import './../home.css';
 
 
-const digit = 4
-
 // 最小項のクラス
 const Term = class {
     constructor(bitOne, bitX = 0, digit = 4) {
@@ -56,7 +54,7 @@ const Term = class {
 }
 
 // 1のビット数によって分類
-const getArrByOne = (array) => {
+const getArrByOne = (array, digit) => {
     const arrByOne = []
     for(let i = 0; i < digit + 1; i++) {
         const subArrByOne = []
@@ -90,7 +88,7 @@ const dTob = (dNum) => {
 
 
 // 論理和と論理積の差が2の階乗のいずれならば(二つの論理式のビット差が1である場合)その差を返す関数
-const func1 = (termA, termB) => {
+const func1 = (termA, termB, digit) => {
     const dif = (termA.one | termB.one) - (termA.one & termB.one)
     for(let i = 0; i < digit; i++) {
         if((dif === 2 ** i)) {
@@ -129,9 +127,9 @@ const func3 = (array, term) => {
 }
 
 // n次圧縮を行い、mainTermsを返す関数
-const func4 = (mainTerms) => {
+const func4 = (mainTerms, digit) => {
     // 1のビット数によって分類した配列
-    const arrByOne = getArrByOne(mainTerms)
+    const arrByOne = getArrByOne(mainTerms, digit)
     // 圧縮したTermを追加する配列
     let arrSec = []
     // 圧縮した項を削除するための配列
@@ -144,7 +142,7 @@ const func4 = (mainTerms) => {
             // 1のビット数がi + 1個の項について
             for(let k = 0; k < arrByOne[i + 1].length; k++) {
                 // 1ビットの差
-                const difOne = func1(arrByOne[i][j], arrByOne[i + 1][k]) 
+                const difOne = func1(arrByOne[i][j], arrByOne[i + 1][k], digit) 
                 // xのビットが一致するかどうか判定
                 const difX = (arrByOne[i][j].bitX === arrByOne[i + 1][k].bitX)
 
@@ -154,7 +152,7 @@ const func4 = (mainTerms) => {
                     arrThi = func3(arrThi, arrByOne[i][j])
                     arrThi = func3(arrThi, arrByOne[i+1][k])
 
-                    const newTerm = new Term(arrByOne[i][j].bitOne, dTob(arrByOne[i][j].x | difOne))
+                    const newTerm = new Term(arrByOne[i][j].bitOne, dTob(arrByOne[i][j].x | difOne), digit)
                     arrSec = func3(arrSec, newTerm)
                 }
             }
@@ -173,11 +171,11 @@ const func4 = (mainTerms) => {
 }
 
 // 主項候補を返す関数
-const func5 = (mainTerms) => {
+const func5 = (mainTerms, digit) => {
     const listMainTerms = []
     for(let i = 0; i < digit; i++) {
         const subMainTerms = [...mainTerms]
-        mainTerms = func4(subMainTerms)
+        mainTerms = func4(subMainTerms, digit)
         listMainTerms.push(mainTerms)
     }
 
@@ -185,7 +183,7 @@ const func5 = (mainTerms) => {
 }
 
 // 必須主項と非必須主項を返す関数
-const func6 = (terms, mainTerms) => {
+const func6 = (terms, mainTerms, digit) => {
     const subTerms = [...terms]
     let notEssMainTerms = [...mainTerms]
     let essMainTerms = []
@@ -200,7 +198,7 @@ const func6 = (terms, mainTerms) => {
         for(let j = 0; j < mainTerms.length; j++) {
             // xのビット以外が一致しているか判定
             if(((subTerms[i].one | mainTerms[j].x) === (mainTerms[j].one | mainTerms[j].x))) {
-                arrCheck.push(new Term(mainTerms[j].bitOne, mainTerms[j].bitX))
+                arrCheck.push(new Term(mainTerms[j].bitOne, mainTerms[j].bitX, digit))
                 essCheck.push(j)
             }
         }
@@ -285,21 +283,23 @@ const func9 = (coveredArr) => {
 
 
 
-export const Logic = ({inputs = []}) => {
+export const Logic = ({inputs = [], inputDigit = 4}) => {
+    const digit = inputDigit
     let terms = []
     for(let i = 0; i < inputs.length; i++){
-        const newTerm = new Term(inputs[i])
+        const newTerm = new Term(inputs[i], 0, digit)
         terms = func3(terms, newTerm)
     }
     console.log("terms", terms)
+    console.log("digit", digit)
 
-    const arrByOne = getArrByOne(terms)
+    const arrByOne = getArrByOne(terms, digit)
     console.log("arrByOne", arrByOne)
 
-    let listMainTerms = func5(terms)
+    let listMainTerms = func5(terms, digit)
     console.log("listMainTerms", listMainTerms)
 
-    const [mainTerms, essMainTerms, notEssMainTerms] = func6(terms, listMainTerms[listMainTerms.length - 1])
+    const [mainTerms, essMainTerms, notEssMainTerms] = func6(terms, listMainTerms[listMainTerms.length - 1], digit)
     console.log("essMainTerms", essMainTerms)
 
     const [restTerms, notRestTerms] = func7(terms, essMainTerms)

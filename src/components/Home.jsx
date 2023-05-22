@@ -5,12 +5,21 @@ import { ResetButton } from "./ResetButton";
 export const Home = () => {
     const [inputBitOne, setInputBitOne] = useState()
     const [inputsBitOne, setInputsBitOne] = useState([])
-    const [digit, setDigit] = useState(4)
+    const [digit, setDigit] = useState()
+    const [inputDigit, setInputDigit] = useState(4)
+    console.log("Home digit", digit)
+    console.log("Home InputDigit", inputDigit)
 
     const submitBitOne = (input) => {
         const subInput = ToNum(input)
         setInputsBitOne([...inputsBitOne, subInput])
         setInputBitOne("")
+    }
+
+    const submitDigit = (input) => {
+        const subInput = ToNum(input)
+        setInputDigit(subInput)
+        setDigit()
     }
 
     const ToNum = (text) => {
@@ -38,13 +47,14 @@ export const Home = () => {
                 <p>
                     桁数を入力(デフォルトでは4(A, B, C, D))
                 </p>
-                <input type="number" value={digit} onChange={(event) => setDigit(event.target.value)} />
+                <input type="number" value={digit} onChange={(event) => setDigit(event.target.value)}/>
+                <button onClick={() => submitDigit(digit)}>桁数提出</button>
             </tr>
             <tr>
                 <p>
                     最小項を入力    
                 </p>
-                <input type="number" value={inputBitOne} onChange={(event) => setInputBitOne(event.target.value)} />
+                <input type="number" value={inputBitOne} onChange={(event) => setInputBitOne(event.target.value)}/>
                 <button onClick={() => submitBitOne(inputBitOne)}>最小項提出</button>
                 <ResetButton handleClick={handleClick} />
             </tr>
@@ -52,7 +62,7 @@ export const Home = () => {
             <ul>
                 {inputsBitOne.map((inputBitOne, i) => <li key={i}>{inputBitOne}</li>)}
             </ul>
-            <Logic inputs={inputsBitOne} />
+            <Logic inputs={inputsBitOne} inputDigit={inputDigit} />
         </div>
     )
 }
