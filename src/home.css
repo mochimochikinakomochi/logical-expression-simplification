@@ -1,0 +1,23 @@
+.table {
+    border-collapse: collapse; /* セルの間のすき間をなしにする */
+	background-color: #374;    /* 背景色 */
+	border: 1px solid #222;    /* 線の太さ,色 */
+	user-select: none;   /* テキストの範囲選択を禁止 */
+}
+
+
+.square div.ess{
+    background-color: black;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	margin: 0 auto;
+}
+
+.square div.notEss{
+    background-color: white;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	margin: 0 auto;
+}
