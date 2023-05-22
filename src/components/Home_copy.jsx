@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Logic } from "./Logic";
+import { Logic } from "./Logic_copy";
 
 export const Home = () => {
     const [inputBitOne, setInputBitOne] = useState()
@@ -37,6 +37,10 @@ export const Home = () => {
             <p>inputsBitOne</p>
             <ul>
                 {inputsBitOne.map((inputBitOne, i) => <li key={i}>{inputBitOne}</li>)}
+            </ul>
+            <p>inputsBitX</p>
+            <ul>
+                {inputsBitX.map((inputBitX, i) => <li key={i}>{inputBitX}</li>)}
             </ul>
             <Logic inputs={[inputsBitOne, inputsBitX]} />
         </div>

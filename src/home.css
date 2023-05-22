@@ -1,8 +1,34 @@
 .table {
     border-collapse: collapse; /* セルの間のすき間をなしにする */
 	background-color: #374;    /* 背景色 */
-	border: 1px solid #222;    /* 線の太さ,色 */
+	border: 3px solid #222;    /* 線の太さ,色 */
 	user-select: none;   /* テキストの範囲選択を禁止 */
+}
+
+.table td {
+	padding: 0;                /* セルの余白をゼロ */
+	border: 1px solid #222;    /* セルの枠の線 */
+	text-align: center;        /* 文字を左右中央にする */    
+}
+
+.table th {
+	padding: 0;                /* セルの余白をゼロ */
+	border: 1px solid #222;    /* セルの枠の線 */
+	text-align: center;        /* 文字を左右中央にする */
+}
+
+th.ess {
+	color: rgb(0, 213, 255);
+	font-weight: lighter;
+	white-space: nowrap;
+}
+
+th.notEss {
+	white-space: nowrap;
+}
+
+.table td.true {
+	text-decoration: line-through;
 }
 
 

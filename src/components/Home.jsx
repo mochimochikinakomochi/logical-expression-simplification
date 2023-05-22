@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Logic } from "./Logic";
+import { ResetButton } from "./ResetButton";
 
 export const Home = () => {
     const [inputBitOne, setInputBitOne] = useState()
-    const [inputBitX, setInputBitX] = useState()
     const [inputsBitOne, setInputsBitOne] = useState([])
-    const [inputsBitX, setinputsBitX] = useState([])
+    const [digit, setDigit] = useState(4)
 
     const submitBitOne = (input) => {
         const subInput = ToNum(input)
@@ -13,36 +13,46 @@ export const Home = () => {
         setInputBitOne("")
     }
 
-
-    const submitBitX = (input) => {
-        const subInput = ToNum(input)
-        setinputsBitX([...inputsBitX, subInput])
-        setInputBitX("")
-    }
-
     const ToNum = (text) => {
         const num = Number(text)
         return num
     }
+
+    const handleClick = () => {
+        setInputBitOne()
+        setInputsBitOne([])
+    }
     
     return (
-        <div><tr>
-                <input type="number" value={inputBitOne} onChange={(event) => setInputBitOne(event.target.value)} />
-                <button onClick={() => submitBitOne(inputBitOne)}>1ビットのビット表現</button>
+        <div>
+            <h1>
+                クワイン マクラスキー法で論理式を圧縮, 必須主項を発見
+            </h1>
+            <p>
+                最小項の入力例: ￢AB￢CD =&gt; 101, ABC￢D =&gt; 1110
+            </p>
+            <p>
+                入力したら「最小項提出」をクリック
+            </p>
+            <tr>
+                <p>
+                    桁数を入力(デフォルトでは4(A, B, C, D))
+                </p>
+                <input type="number" value={digit} onChange={(event) => setDigit(event.target.value)} />
             </tr>
             <tr>
-                <input type="number" value={inputBitX} onChange={(event) => setInputBitX(event.target.value)} />
-                <button onClick={() => submitBitX(inputBitX)}>xビットのビット表現</button>
+                <p>
+                    最小項を入力    
+                </p>
+                <input type="number" value={inputBitOne} onChange={(event) => setInputBitOne(event.target.value)} />
+                <button onClick={() => submitBitOne(inputBitOne)}>最小項提出</button>
+                <ResetButton handleClick={handleClick} />
             </tr>
-            <p>inputsBitOne</p>
+            <p>inputs</p>
             <ul>
                 {inputsBitOne.map((inputBitOne, i) => <li key={i}>{inputBitOne}</li>)}
             </ul>
-            <p>inputsBitX</p>
-            <ul>
-                {inputsBitX.map((inputBitX, i) => <li key={i}>{inputBitX}</li>)}
-            </ul>
-            <Logic inputs={[inputsBitOne, inputsBitX]} />
+            <Logic inputs={inputsBitOne} />
         </div>
     )
 }

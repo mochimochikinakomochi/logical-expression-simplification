@@ -8,34 +8,27 @@ const digit = 4
 const Term = class {
     constructor(bitOne, bitX = 0, digit = 4) {
         this.bitOne = bitOne;
-        this.subBitOne = bitOne;
         this.one = 0; 
         this.bitX = bitX;
-        this.subBitX = bitX;
         this.x = 0;
         this.digit = digit;
         this.numOne = 0;
-        this.isEss = "notEss";
-        this.isCoveredByEss = "false"
-        this.oneX = ""
-        this.subOneX = []
+        this.subBitOne = bitOne;
+        this.subBitX = bitX;
         this.Logic = ""
         this.subLogic = []
-        this.Logics = [["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
-                        ["￢A", "￢B", "￢C", "￢D", "￢E", "￢F", "￢G", "￢H", "￢I", "￢J", "￢K", "￢L", "￢M", "￢N", "￢O", "￢P", "￢Q", "￢R", "￢S", "￢T", "￢U", "￢V", "￢W", "￢X", "￢Y", "￢Z"]]
-        for(let i = 1; i < digit + 1; i++) {
+        this.Logics = [["D", "C", "B", "A"], ["￢D", "￢C", "￢B", "￢A"]]
+        for(let i = 0; i < digit; i++) {
             if((this.subBitOne % 10 ) === 1) {
                 this.numOne += 1
-                this.one += 2 ** (i - 1)
-                this.subLogic.push(this.Logics[0][digit - i])
-                this.subOneX.push("1")
+                this.one += 2 ** i
+                this.subLogic.push(this.Logics[0][i])
             }
+            // 変更有
             if((this.subBitX % 10) === 1) {
-                this.x += 2 ** (i - 1)
-                this.subOneX.push("x")
+                this.x += 2 ** i
             } else if(this.subBitOne % 10 === 0){
-                this.subLogic.push(this.Logics[1][digit - i])
-                this.subOneX.push("0")
+                this.subLogic.push(this.Logics[1][i])
             }
             this.subBitOne = Math.floor(this.subBitOne / 10)
             this.subBitX = Math.floor(this.subBitX / 10)
@@ -44,14 +37,17 @@ const Term = class {
         for(let j = 0; j < this.subLogic.length; j++) {
             this.Logic += this.subLogic[j]
         }
-        this.subOneX = this.subOneX.reverse()
-        for(let k = 0; k < this.subOneX.length; k++) {
-            this.oneX += this.subOneX[k]
-        }
     }
 
     getInfo() {
         return [this.bitOne, this.bitX, this.numOne]
+    }
+
+    getLogic() {
+        const Logic = []
+        for(let i = 0; i < digit; i++) {
+            
+        }
     }
 }
 
@@ -189,28 +185,25 @@ const func6 = (terms, mainTerms) => {
     const subTerms = [...terms]
     let notEssMainTerms = [...mainTerms]
     let essMainTerms = []
+    let coveredArr = []
 
     // 最小項について
     for(let i = 0; i < subTerms.length; i++) {
         // それぞれの最小項についてカバーする主項を保存
         const arrCheck = []
-        // 必須主項かどうか判定するための配列
-        const essCheck = []
         // 主項について
         for(let j = 0; j < mainTerms.length; j++) {
             // xのビット以外が一致しているか判定
             if(((subTerms[i].one | mainTerms[j].x) === (mainTerms[j].one | mainTerms[j].x))) {
                 arrCheck.push(new Term(mainTerms[j].bitOne, mainTerms[j].bitX))
-                essCheck.push(j)
             }
         }
         if(arrCheck.length === 1) { 
             essMainTerms = func3(essMainTerms, arrCheck[0])
             notEssMainTerms = func2(notEssMainTerms, arrCheck[0])
-            mainTerms[essCheck[0]].isEss = "ess"
         }
     }
-    return [mainTerms, essMainTerms, notEssMainTerms]
+    return [essMainTerms, notEssMainTerms]
 }
 
 // 必須主項にカバーされる最小項を除いた最小項の配列を返す関数
@@ -239,6 +232,9 @@ const func7 = (terms, essMainTerms) => {
 
 // 最小項それぞれがどの主項にカバーされるかを判定(主項にカバーされる場合"notEss", どの主項にもカバーされない場合"false")
 const func8 = (terms, mainTerms, essMainTerms) => {
+    console.log("start func8")
+    console.log("terms", terms)
+    console.log("mainTerms", mainTerms)
     let coveredArr = []
     // 最小項について
     for(let i = 0; i < terms.length; i++) {
@@ -252,19 +248,15 @@ const func8 = (terms, mainTerms, essMainTerms) => {
             }
         }
         coveredArr.push(subCoveredArr)
-        // 必須主項について
-        for(let k = 0; k < essMainTerms.length; k++) {
-            if(((terms[i].one | essMainTerms[k].x) === (essMainTerms[k].one | essMainTerms[k].x))) {
-                terms[i].isCoveredByEss = "true"
-            }
-        }
     }
+    console.log("before", coveredArr)
     coveredArr = func9(coveredArr)
+    console.log("after", coveredArr)
 
-    return [terms, coveredArr]
+    return coveredArr
 }
 
-// 必須主項にのみカバーされる場合"ess"に直す
+// 必須主項にカバーされる場合"ess"に直す
 const func9 = (coveredArr) => {
     for(let i = 0; i < coveredArr.length; i++) {
         let count = [];
@@ -281,14 +273,12 @@ const func9 = (coveredArr) => {
     return coveredArr
 }
 
-// termが必須主項にカバーされているかどうか判定
 
 
-
-export const Logic = ({inputs = []}) => {
+export const Logic = ({inputs = [[], []] }) => {
     let terms = []
-    for(let i = 0; i < inputs.length; i++){
-        const newTerm = new Term(inputs[i])
+    for(let i = 0; i < inputs[0].length; i++){
+        const newTerm = new Term(inputs[0][i], inputs[1][i])
         terms = func3(terms, newTerm)
     }
     console.log("terms", terms)
@@ -299,21 +289,22 @@ export const Logic = ({inputs = []}) => {
     let listMainTerms = func5(terms)
     console.log("listMainTerms", listMainTerms)
 
-    const [mainTerms, essMainTerms, notEssMainTerms] = func6(terms, listMainTerms[listMainTerms.length - 1])
+    const [essMainTerms, notEssMainTerms] = func6(terms, listMainTerms[listMainTerms.length - 1])
     console.log("essMainTerms", essMainTerms)
 
     const [restTerms, notRestTerms] = func7(terms, essMainTerms)
     console.log("restTerms", restTerms)
     console.log("notRestTerms", notRestTerms)
 
-    let coveredArr 
-    [terms, coveredArr] = func8(terms, mainTerms, essMainTerms)
+    const coveredArr = func8(terms, listMainTerms[listMainTerms.length - 1], essMainTerms)
     console.log("coveredArr", coveredArr)
+
+    console.log("listMainTerms[listMainTerms.length - 1]", listMainTerms[listMainTerms.length - 1])
 
 
     return (
         <div>
-            <p>terms</p>
+            <p>logic</p>
             <div>
                 {arrByOne.map((arr, index) => {
                     return (
@@ -348,7 +339,7 @@ export const Logic = ({inputs = []}) => {
                                 {mainTerms.map((mainTerm, subIndex) => {
                                     return (
                                         <li>
-                                            {[mainTerm.oneX, "||", mainTerm.Logic]}
+                                            {[mainTerm.bitOne, "||", mainTerm.bitX]}
                                         </li>
                                     )
                                 })}
@@ -369,7 +360,7 @@ export const Logic = ({inputs = []}) => {
                     )
                 })}
             </ol>
-            <Table terms={terms} mainTerms={mainTerms} coveredArr={coveredArr} /> 
+            <Table terms={terms} mainTerms={listMainTerms[listMainTerms.length - 1]} coveredArr={coveredArr} /> 
         </div>
     )
 }
